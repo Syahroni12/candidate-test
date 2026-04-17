@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Supplier;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\SupplierRequest;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class SupplierController extends Controller
@@ -46,18 +46,8 @@ class SupplierController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SupplierRequest $request)
     {
-        // Validasi input
-        $validasi = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-        ]);
-
-        if ($validasi->fails()) {
-            Alert::error('Validation Error', 'Please correct the errors in the form.');
-            return redirect()->back()->withErrors($validasi)->withInput();
-        }
-
         // Simpan ke database
         Supplier::create([
             'name' => $request->name,
@@ -86,17 +76,8 @@ class SupplierController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Supplier $supplier)
+    public function update(SupplierRequest $request, Supplier $supplier)
     {
-        $validasi = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-        ]);
-
-        if ($validasi->fails()) {
-            Alert::error('Validation Error', 'Please correct the errors in the form.');
-            return redirect()->back()->withErrors($validasi)->withInput();
-        }
-
         $supplier->update([
             'name' => $request->name,
         ]);

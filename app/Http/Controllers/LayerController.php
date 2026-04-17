@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Layer;
 use App\Models\Layup;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\LayerRequest;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class LayerController extends Controller
@@ -31,20 +31,8 @@ class LayerController extends Controller
     /**
      * Store a newly created layer in storage.
      */
-    public function store(Request $request, Layup $layup)
+    public function store(LayerRequest $request, Layup $layup)
     {
-        $validasi = Validator::make($request->all(), [
-            'layer_order' => 'required|integer|min:1',
-            'thickness'   => 'required|numeric|min:0',
-            'width'       => 'required|numeric|min:0',
-            'angle'       => 'required|numeric',
-        ]);
-
-        if ($validasi->fails()) {
-            Alert::error('Validation Error', 'Please correct the errors in the form.');
-            return redirect()->back()->withErrors($validasi)->withInput();
-        }
-
         $layup->layers()->create([
             'layer_order' => $request->layer_order,
             'thickness'   => $request->thickness,
@@ -69,20 +57,8 @@ class LayerController extends Controller
     /**
      * Update the specified layer in storage.
      */
-    public function update(Request $request, Layer $layer)
+    public function update(LayerRequest $request, Layer $layer)
     {
-        $validasi = Validator::make($request->all(), [
-            'layer_order' => 'required|integer|min:1',
-            'thickness'   => 'required|numeric|min:0',
-            'width'       => 'required|numeric|min:0',
-            'angle'       => 'required|numeric',
-        ]);
-
-        if ($validasi->fails()) {
-            Alert::error('Validation Error', 'Please correct the errors in the form.');
-            return redirect()->back()->withErrors($validasi)->withInput();
-        }
-
         $layer->update([
             'layer_order' => $request->layer_order,
             'thickness'   => $request->thickness,

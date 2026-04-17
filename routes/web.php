@@ -20,6 +20,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/supplier/delete/{supplier}', [\App\Http\Controllers\SupplierController::class, 'destroy'])->name('supplier.delete');
 
     // Layup routes (scoped to supplier)
+    Route::get('/supplier/{supplier}/export', [\App\Http\Controllers\ImportExportController::class, 'export'])->name('supplier.export');
+    Route::post('/supplier/{supplier}/import', [\App\Http\Controllers\ImportExportController::class, 'import'])->name('supplier.import');
     Route::get('/supplier/{supplier}/layup', [\App\Http\Controllers\LayupController::class, 'index'])->name('layup.index');
     Route::get('/supplier/{supplier}/layup/create', [\App\Http\Controllers\LayupController::class, 'create'])->name('layup.create');
     Route::post('/supplier/{supplier}/layup', [\App\Http\Controllers\LayupController::class, 'store'])->name('layup.store');

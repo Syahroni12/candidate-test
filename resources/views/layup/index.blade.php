@@ -105,26 +105,24 @@
         <h2 class="text-[19px] font-serif font-bold text-gray-900">Associated Layups</h2>
 
         <div class="flex items-center gap-2">
-            <button
+            <button onclick="document.getElementById('importModal').classList.remove('hidden')"
                 class="flex items-center gap-2 h-9 px-3.5 bg-white border border-gray-200 rounded-lg text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="7 10 12 15 17 10" />
                     <line x1="12" y1="15" x2="12" y2="3" />
                 </svg>
                 Import
             </button>
-            <button
+            <a href="{{ route('supplier.export', $supplier->id) }}"
                 class="flex items-center gap-2 h-9 px-3.5 bg-white border border-gray-200 rounded-lg text-[13px] font-medium text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="17 8 12 3 7 8" />
                     <line x1="12" y1="3" x2="12" y2="15" />
                 </svg>
                 Export
-            </button>
+            </a>
             <a href="{{ route('layup.create', $supplier->id) }}"
                 class="flex items-center gap-2 h-9 px-4 bg-[#407c60] hover:bg-[#2d6a4f] text-white rounded-lg text-[13px] font-semibold transition-all shadow-sm ml-1">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -212,6 +210,67 @@
     </div>
 
 </main>
+
+{{-- IMPORT MODAL --}}
+<div id="importModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-gray-900/50 backdrop-blur-sm" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+        <div class="hidden sm:inline-block sm:h-screen sm:align-middle" aria-hidden="true">&#8203;</div>
+        
+        <div class="relative inline-block px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-xl shadow-xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+            <div class="absolute top-0 right-0 hidden pt-4 pr-4 sm:block">
+                <button type="button" onclick="document.getElementById('importModal').classList.add('hidden')" class="text-gray-400 bg-white rounded-md hover:text-gray-500 focus:outline-none">
+                    <span class="sr-only">Close</span>
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="sm:flex sm:items-start">
+                <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 mx-auto bg-blue-100 rounded-full sm:mx-0 sm:h-10 sm:w-10">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                </div>
+                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900" id="modal-title">Import Supplier Data</h3>
+                    <div class="mt-2">
+                        <p class="text-sm text-gray-500">Upload a JSON file containing Layups and Layers to import into this supplier.</p>
+                        
+                        <form id="importForm" action="{{ route('supplier.import', $supplier->id) }}" method="POST" enctype="multipart/form-data" class="mt-4 space-y-4">
+                            @csrf
+                            <div>
+                                <label class="block text-[13px] font-medium text-gray-700 mb-1">JSON File</label>
+                                <input type="file" name="import_file" accept=".json" required
+                                    class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                            </div>
+
+                            <div>
+                                <label class="block text-[13px] font-medium text-gray-700 mb-1">Conflict Resolution Strategy</label>
+                                <select name="conflict_strategy" required
+                                    class="w-full h-[42px] px-3 border border-gray-200 rounded-lg text-[13.5px] text-gray-800 bg-white outline-none focus:border-[#2d6a4f] focus:ring-1 focus:ring-[#2d6a4f] transition-all shadow-sm">
+                                    <option value="overwrite">Overwrite Existing Data</option>
+                                    <option value="skip">Skip Conflict (Keep Current)</option>
+                                    <option value="duplicate">Duplicate Layup (Add Suffix)</option>
+                                </select>
+                                <p class="text-[11.5px] text-gray-500 mt-1">If a layup or layer identical conflict is found, how should the system handle it?</p>
+                            </div>
+
+                            <div class="pt-3 sm:flex sm:flex-row-reverse border-t border-gray-100">
+                                <button type="submit" class="inline-flex justify-center w-full px-4 py-2 text-base font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                                    Start Import
+                                </button>
+                                <button type="button" onclick="document.getElementById('importModal').classList.add('hidden')" class="inline-flex justify-center w-full px-4 py-2 mt-3 text-base font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>

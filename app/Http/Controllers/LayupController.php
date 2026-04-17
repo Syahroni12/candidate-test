@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Layup;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\LayupRequest;
 use RealRashid\SweetAlert\Facades\Alert;
 
 class LayupController extends Controller
@@ -29,17 +29,8 @@ class LayupController extends Controller
     /**
      * Store a newly created layup in storage.
      */
-    public function store(Request $request, Supplier $supplier)
+    public function store(LayupRequest $request, Supplier $supplier)
     {
-        $validasi = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-        ]);
-
-        if ($validasi->fails()) {
-            Alert::error('Validation Error', 'Please correct the errors in the form.');
-            return redirect()->back()->withErrors($validasi)->withInput();
-        }
-
         $supplier->layups()->create([
             'name' => $request->name,
         ]);
@@ -60,17 +51,8 @@ class LayupController extends Controller
     /**
      * Update the specified layup in storage.
      */
-    public function update(Request $request, Layup $layup)
+    public function update(LayupRequest $request, Layup $layup)
     {
-        $validasi = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-        ]);
-
-        if ($validasi->fails()) {
-            Alert::error('Validation Error', 'Please correct the errors in the form.');
-            return redirect()->back()->withErrors($validasi)->withInput();
-        }
-
         $layup->update([
             'name' => $request->name,
         ]);
